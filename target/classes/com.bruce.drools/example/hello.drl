@@ -1,0 +1,31 @@
+package com.bruce.drools.example;
+
+import com.bruce.drools.domain.Rule;
+import com.bruce.drools.domain.Product;
+import com.bruce.drools.domain.Price
+import java.math.BigDecimal;
+
+dialect  "mvel"
+
+rule "hello"
+    when
+        $rule : Rule( )
+        $product : Product(
+                weight >= $rule.weightStart && weight < $rule.weightEnd )
+        $price : Price( )
+    then
+        $price.setFirstPrice($rule.getFirstWeightPrice());
+
+        $nextWeight = $product.getWeight() - $rule.getFirstWeight();
+
+        $nextUnit = 0;
+        if($nextWeight > 0) {
+            $nextUnit = (int) Math.ceil($nextWeight / $rule.getNextWeight());
+        }
+
+        $nextPrice = new BigDecimal($nextUnit).multiply($rule.getNextWeightPrice());
+
+        $price.setNextPrice($nextPrice);
+        $price.setPricce($price.getFirstPrice().add($price.getNextPrice()));
+        System.out.println("Hello");
+end
